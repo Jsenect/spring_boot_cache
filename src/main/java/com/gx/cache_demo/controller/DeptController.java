@@ -39,5 +39,14 @@ public class DeptController {
         this.userService.update(dept);
     }
 
+    @RequestMapping("/getNameById/{id}")
+    public String findNameById( @PathVariable("id") Long id) {
+        try {
+            return userService.findNameById(id);
+        } catch (Exception e) {
+            return e.getMessage();
+
+        }
+    }
 
 }

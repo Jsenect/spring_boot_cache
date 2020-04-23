@@ -39,6 +39,7 @@ public class DeptServiceImpl implements DeptService {
         return this.deptDao.findById(id);
     }
 
+
     @Cacheable(key = "'dpet_list'")
     @Override
     public List<Dept> list() {
@@ -51,14 +52,11 @@ public class DeptServiceImpl implements DeptService {
      * @param dept
      */
 //    @CacheEvict(cacheNames = "dept", key = "#dept.id")
-    @Caching(
-            evict = {
-                    @CacheEvict(cacheNames = "dept", key = "#dept.id"),
-                    @CacheEvict(cacheNames = "dept", key = "#dept.id"),
-
-            }
-
-    )
+    //这个还是不行不能够清除对应的key dept_list的缓存
+    @Caching(evict = {
+            @CacheEvict(value = "dept", key = "'dept_list'"),
+            @CacheEvict(value = "dept", key = "#dept.id")
+    })
     @Override
     public void update(Dept dept) {
         this.deptDao.save(dept);
@@ -67,6 +65,20 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public void save(Dept dept) {
         this.deptDao.save(dept);
+    }
+
+    /**
+     * 返回值不同的时候使用同一个id作为缓存会有问题,所以这里不能 使用同一个缓存的标志
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    @Cacheable(key = "#id")
+    public String findNameById(Long id) throws Exception {
+        Optional<Dept> byId = this.deptDao.findById(id);
+        Dept dept = byId.orElseThrow(() -> new Exception("该资源不存在"));
+        return dept.getName();
     }
 
 

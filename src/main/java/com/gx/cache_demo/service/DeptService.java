@@ -18,4 +18,6 @@ public interface DeptService {
     void update(Dept dept);
 
     void save(Dept dept);
+
+    String findNameById(Long id) throws Exception;
 }
